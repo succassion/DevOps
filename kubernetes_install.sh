@@ -152,10 +152,10 @@ set_repository() {
   apt-get install -y apt-transport-https ca-certificates curl
 
   echo "\e[33m3) Download Google Cloud Public signing Key \e[0m"
-  tmp=$(find /usr/share/keyrings/ -name kubernetes-archive-keyring.gpg)
+  tmp=$(find /etc/apt/keyrings/ -name kubernetes-archive-keyring.gpg)
   if [ -z "$tmp" ]; then
     echo "\e[33m- Google Cloud Public signing key. \e[0m"
-    sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
   else
     echo "\e[33m- Already exists. \e[0m"
   fi
@@ -164,7 +164,7 @@ set_repository() {
   tmp=$(find /etc/apt/sources.list.d/ -name kubernetes.list)
   if [ -z "$tmp" ]; then
     echo "\e[33m- Set Kubernetes apt repository. \e[0m"
-    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
   else
     echo "\e[33m- Already Set repository.  \e[0m"
   fi
