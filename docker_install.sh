@@ -25,11 +25,8 @@ enter_version() {
     DOCKER_VERSION=$input
   fi
 
-  VERSION_STRING="5:"$DOCKER_VERSION"~3-0~ubuntu-focal"
-
   echo
   echo "Docker Version :" "\e[31m $DOCKER_VERSION \e[0m"
-  echo "Docker Version String :" "$VERSION_STRING"
 }
 
 
@@ -40,7 +37,7 @@ add_google_dns() {
   echo "\e[36m1. Add Google DNS \e[0m"
   echo "1) Check Google DNS"
   tmp=$(grep -rin "8.8.8.8" /etc/resolv.conf)
-  
+
   if [ -z "$tmp" ]; then
     echo "\e[33m- Add Google DNS. \e[0m"
     echo "\nnameserver 8.8.8.8" >> /etc/resolv.conf
@@ -73,10 +70,11 @@ setup_repository() {
 
   echo
   echo "2) Add Docker’s official GPG key"
-  tmp=$(find /usr/share/keyrings/ -name docker-archive-keyring.gpg)
+  tmp=$(find /etc/apt/keyrings/ -name docker-archive-keyring.gpg)
   if [ -z "$tmp" ]; then
     echo "\e[33m- Official GPG key. \e[0m"
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+                mkdir -p /etc/apt/keyrings
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   else
     echo "\e[33m- Already exists. \e[0m"
   fi
@@ -84,12 +82,12 @@ setup_repository() {
 
   echo
   echo "3) Use the following command to set up the stable repository"
-  tmp=$(find /usr/share/keyrings/ -name docker-archive-keyring.gpg)
+  tmp=$(find /etc/apt/keyrings/ -name docker-archive-keyring.gpg)
   if [ -z "$tmp" ]; then
     echo "\e[33m- Set up the Stable Repository. \e[0m"
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+                echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   else
     echo "\e[33m- Already exists. \e[0m"
   fi
@@ -103,19 +101,23 @@ install_docker_engine() {
   echo
   echo "\e[36m3. Install Docker Engine \e[0m"
   apt-get update
-  apt-get install docker-ce docker-ce-cli containerd.io -y
+  #apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
   echo "1) Check the apt package index" 
   apt-cache madison docker-ce
+  # 20220414
   #  docker-ce | 5:20.10.14~3-0~ubuntu-focal | https://download.docker.com/linux/ubuntu focal/stable amd64 Packages
-  #  docker-ce | 5:20.10.13~3-0~ubuntu-focal | https://download.docker.com/linux/ubuntu focal/stable amd64 Packages
-  #  docker-ce | 5:20.10.12~3-0~ubuntu-focal | https://download.docker.com/linux/ubuntu focal/stable amd64 Packages
-  #  docker-ce | 5:20.10.11~3-0~ubuntu-focal | https://download.docker.com/linux/ubuntu focal/stable amd64 Packages
-  #  docker-ce | 5:20.10.10~3-0~ubuntu-focal | https://download.docker.com/linux/ubuntu focal/stable amd64 Packages
+  # 20220602
+  #  docker-ce | 5:20.10.14~3-0~ubuntu-jammy | https://download.docker.com/linux/ubuntu jammy/stable amd64 Packages
+  VERSION_STRING=$(apt-cache madison docker-ce | grep $DOCKER_VERSION | awk '{print $3}')
 
   echo
-  echo "2) Install a specific version"
-  # apt-get install docker-ce=<VERSION_STRING> docker-ce-cli=<VERSION_STRING> containerd.io
-  apt-get -y install docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io
+  if [ -z "$VERSION_STRING" ]; then
+    echo "\e[31m- No longer supports that version. \e[0m"
+                apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  else
+    echo "2) Install a specific version"
+    apt-get -y install docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-compose-plugin
+  fi
 }
 
 
