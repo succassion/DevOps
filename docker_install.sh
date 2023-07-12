@@ -37,7 +37,7 @@ add_google_dns() {
   echo "\e[36m1. Add Google DNS \e[0m"
   echo "1) Check Google DNS"
   tmp=$(grep -rin "8.8.8.8" /etc/resolv.conf)
-
+  
   if [ -z "$tmp" ]; then
     echo "\e[33m- Add Google DNS. \e[0m"
     echo "\nnameserver 8.8.8.8" >> /etc/resolv.conf
@@ -73,8 +73,8 @@ setup_repository() {
   tmp=$(find /etc/apt/keyrings/ -name docker-archive-keyring.gpg)
   if [ -z "$tmp" ]; then
     echo "\e[33m- Official GPG key. \e[0m"
-                mkdir -p /etc/apt/keyrings
-                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+		mkdir -p /etc/apt/keyrings
+		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   else
     echo "\e[33m- Already exists. \e[0m"
   fi
@@ -85,7 +85,7 @@ setup_repository() {
   tmp=$(find /etc/apt/keyrings/ -name docker-archive-keyring.gpg)
   if [ -z "$tmp" ]; then
     echo "\e[33m- Set up the Stable Repository. \e[0m"
-                echo \
+		echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   else
@@ -113,7 +113,7 @@ install_docker_engine() {
   echo
   if [ -z "$VERSION_STRING" ]; then
     echo "\e[31m- No longer supports that version. \e[0m"
-                apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+		apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
   else
     echo "2) Install a specific version"
     apt-get -y install docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-compose-plugin
