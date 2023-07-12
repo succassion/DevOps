@@ -119,6 +119,7 @@ docker_daemon() {
   "log-opts": {
     "max-size": "50m"
   },
+  "insecure-registries": ["p5g.lge.com:30050"],
   "storage-driver": "overlay2"
 }
 EOF
@@ -128,9 +129,6 @@ EOF
   systemctl enable docker
   systemctl daemon-reload
   systemctl restart docker
-
-  systemctl status kubelet
-  systemctl start kubelet
 
   echo
   echo "\e[33m- Docker Daemon Status. \e[0m"
@@ -152,22 +150,12 @@ set_repository() {
   apt-get install -y apt-transport-https ca-certificates curl
 
   echo "\e[33m3) Download Google Cloud Public signing Key \e[0m"
-  tmp=$(find /etc/apt/keyrings/ -name kubernetes-archive-keyring.gpg)
-  if [ -z "$tmp" ]; then
-    echo "\e[33m- Google Cloud Public signing key. \e[0m"
-    sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  else
-    echo "\e[33m- Already exists. \e[0m"
-  fi
+  echo "\e[33m- Google Cloud Public signing key. \e[0m"
+  curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
 
   echo "\e[33m4). Add the Kubernetes apt repository \e[0m"
-  tmp=$(find /etc/apt/sources.list.d/ -name kubernetes.list)
-  if [ -z "$tmp" ]; then
-    echo "\e[33m- Set Kubernetes apt repository. \e[0m"
-    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-  else
-    echo "\e[33m- Already Set repository.  \e[0m"
-  fi
+  echo "\e[33m- Set Kubernetes apt repository. \e[0m"
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 }
 
 
