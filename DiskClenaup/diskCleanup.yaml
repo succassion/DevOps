@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: disk-cleanup-cronjob
+  namespace: disk-cleanup
+spec:
+  schedule: "* 12 * * *"  # 12시간마다 실행
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: disk-cleanup-job
+            image: my-disk-cleanup-image
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: data-volume
+              mountPath: /data/logs
+            - name: tz-config
+              mountPath: /etc/localtime
+            command: ["/bin/sh", "-c"]
+            args: ["find /data/logs -type f -mtime +1 -exec rm -r {} \\;"] # 1일 이전 파일 삭제 명령어
+            #["find /data/logs -type f -mmin +360 -delete"] # 6시간 이전 파일 삭제 명령어
+          restartPolicy: OnFailure
+          volumes:
+          - name: data-volume
+            hostPath:
+              path: /home/lgeadmin/logs
+              type: Directory
+          - name: tz-config
+            hostPath:
+              path: /etc/localtime
+              type: File
