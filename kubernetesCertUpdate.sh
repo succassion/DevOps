@@ -81,7 +81,7 @@ main() {
       echo "\e[36m-------------------------------------------------------------------\e[0m"
 
       read -p "Input the operation number : " oper
-      if [ $oper -lt 0 ] && [ $oper -gt 3 ]; then
+      if [ $oper -lt 0 ] || [ $oper -gt 3 ]; then
         echo "\e[1;31mWrong Value!\e[0m"
         continue
       fi
