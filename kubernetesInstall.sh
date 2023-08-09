@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Docker CE for Linux installation script
+# Kubernetes CE for Linux installation script
 #
-# See https://docs.docker.com/engine/install/ for the installation steps.
+# See https://kubernetes.io/docs/tasks/tools/ for the installation steps.
 #
 
 # Enter Version
