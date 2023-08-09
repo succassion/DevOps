@@ -83,6 +83,7 @@ main() {
       read -p "Input the operation number : " oper
       if [ $oper -lt 0 ] || [ $oper -gt 3 ]; then
         echo "\e[1;31mWrong Value!\e[0m"
+        echo
         continue
       fi
       echo
@@ -102,6 +103,7 @@ main() {
           ;;
         0)
           echo "Exit"
+          echo
           break
           ;;
       esac
