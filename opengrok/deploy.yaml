@@ -1,0 +1,57 @@
+# https://github.com/oracle/opengrok/tree/master/docker
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opengrok
+  namespace: opengrok
+  labels:
+    app: opengrok
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opengrok
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: opengrok
+    spec:
+      containers:
+      - name: opengrok
+        image: opengrok/docker:master
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SYNC_PERIOD_MINUTES
+          value: "1"
+        - name: API_TIMEOUT
+          value: "20"
+        - name: NOMIRROR
+          value: "true"
+        - name: READONLY_CONFIG_FILE
+          value: "/opengrok/etc/read-only-config.xml"
+        volumeMounts:
+        - name: source-db
+          mountPath: /opengrok/src/
+        - name: opengrok-config
+          mountPath: /opengrok/etc/read-only-config.xml
+          subPath: "read-only-config.xml"
+        - name: tz-config
+          mountPath: /etc/localtime
+      volumes:
+      - name: source-db
+        hostPath:
+          path: /home/lgeadmin/opengrokdata/source
+      - name: opengrok-config
+        configMap:
+          name: opengrok-config
+      - name: tz-config
+        hostPath:
+          path: /etc/localtime
+          type: File
