@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opengrok-config
+  namespace: opengrok
+  labels:
+    app: opengrok
+data:
+  read-only-config.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <java version="17.0.9" class="java.beans.XMLDecoder">
+    <object class="org.opengrok.indexer.configuration.Configuration" id="Configuration0">
+      <void id="IgnoredNames0" property="ignoredNames">
+      <void id="IgnoredDirs0" property="ignoredDirs">
+        <void property="items">
+        <void method="add">
+          <string>.bk</string>
+        </void>
+        <void method="add">
+          <string>.hg</string>
+        </void>
+        <void method="add">
+          <string>.bzr</string>
+        </void>
+        <void method="add">
+          <string>.git</string>
+        </void>
+        <void method="add">
+          <string>.svn</string>
+        </void>
+        <void method="add">
+          <string>SCCS</string>
+        </void>
+        <void method="add">
+          <string>.razor</string>
+        </void>
+        <void method="add">
+          <string>RCS</string>
+        </void>
+        <void method="add">
+          <string>CVS</string>
+        </void>
+        <void method="add">
+          <string>CVSROOT</string>
+        </void>
+        <void method="add">
+          <string>.repo</string>
+        </void>
+        </void>
+      </void>
+      <void id="IgnoredFiles0" property="ignoredFiles">
+        <void property="items">
+        <void method="add">
+          <string>.git</string>
+        </void>
+        <void method="add">
+          <string>.hgtags</string>
+        </void>
+        <void method="add">
+          <string>.hgignore</string>
+        </void>
+        <void method="add">
+          <string>.gitignore</string>
+        </void>
+        <void method="add">
+          <string>.p4config</string>
+        </void>
+        <void method="add">
+          <string>.cvsignore</string>
+        </void>
+        </void>
+      </void>
+      </void>
+    </object>
+    </java>
